@@ -31,18 +31,45 @@ public class GrafoDirigido<T> implements Grafo<T> {
 
 	}
 
-	//Complejidad: O(v*a) donde v es la cantidad de vertices del grafo.
+	//Complejidad: O(v*a) donde v es la cantidad de vertices del grafo y
+	//a es la cantidad de arcos de cada vértice
 	@Override
 	public void borrarVertice(int verticeId) {
 		if(this.contieneVertice(verticeId)){	//O(1)
 			
 			Iterator<Integer> iter = this.obtenerVertices();	//O(1)
 			
-			while (iter.hasNext()) {	//O(v)
+			//por cada vértice, busco si puedo borrar un arco dirigido al verticeId
+			
+			/*while (iter.hasNext()) {	//O(v)
 				int verticeActual = iter.next();
 				this.borrarArco(verticeActual, verticeId);	//O(a)
 	        }
 			
+			//resto la cantidad de adyacentes del vértice a borrar del atributo cantidadArcos precalculado
+			
+			Iterator<Integer> itAdyacentesDelVertice = this.obtenerAdyacentes(verticeId);	//O(1)
+			
+			while(itAdyacentesDelVertice.hasNext()){	//O(n)
+				cantidadArcos--;
+			}*/
+			
+			//por cada vértice que no sea el vértice a eliminar, busco si puedo borrar un arco dirigido al mismo,
+			//o bien actualizo el valor precalculado de cantidadArcos en caso de serlo
+			while (iter.hasNext()) {	//O(v)
+				
+				int verticeActual = iter.next();
+				
+				if(verticeActual != verticeId){	//si no estoy en el vértice a eliminar
+					this.borrarArco(verticeActual, verticeId);	//O(a)
+				}
+				else{	//si es el vértice a borrar, obtengo cuántos adyascentes tiene para restarlos a cantidadArcos
+					int cantidadAdyacentes = this.vertices.get(verticeId).size();	//O(1)
+					cantidadArcos = cantidadArcos - cantidadAdyacentes;
+				}
+	        }
+			
+			//elimino el vértice del hashmap
 			this.vertices.remove(verticeId);	//O(1)
 			
 		}
@@ -141,17 +168,12 @@ public class GrafoDirigido<T> implements Grafo<T> {
 	}
 
 	//Dado un vertice obtener sus adyascentes
-	//Complejidad: O(a) donde a es la cantidad de arcos 
 	@Override
-	public Iterator<Integer> obtenerAdyacentes(int verticeId) {
+	public Iterator<Integer> obtenerAdyacentes(int verticeId) {	//O(1)
 		
-		ArrayList<Arco<T>> verticeOrigen = this.vertices.get(verticeId); //guardo el valor (arraylist de arcos) buscando como clave el vertice 
-		ArrayList<Integer> totalAdyacentes = new ArrayList<Integer>();	//inicializo arrayList para guardar todos los adys del grafo
+		Iterator<Arco<T>> it = this.vertices.get(verticeId).iterator();	//O(1)
 		
-		for(Arco<T> arco:verticeOrigen)	//O(a)	//por cada arco
-			totalAdyacentes.add(arco.getVerticeDestino());	//agrego el destino (adyacente)
-		
-		return totalAdyacentes.iterator();
+		return new IteratorArco<T>(it);	//O(1)
 	}
 
 	//Complejidad: o(v*a) donde v es la cantidad de vértices del grafo y la a es la cant de arcos de ese vertice.
