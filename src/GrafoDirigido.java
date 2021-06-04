@@ -39,21 +39,6 @@ public class GrafoDirigido<T> implements Grafo<T> {
 			
 			Iterator<Integer> iter = this.obtenerVertices();	//O(1)
 			
-			//por cada vértice, busco si puedo borrar un arco dirigido al verticeId
-			
-			/*while (iter.hasNext()) {	//O(v)
-				int verticeActual = iter.next();
-				this.borrarArco(verticeActual, verticeId);	//O(a)
-	        }
-			
-			//resto la cantidad de adyacentes del vértice a borrar del atributo cantidadArcos precalculado
-			
-			Iterator<Integer> itAdyacentesDelVertice = this.obtenerAdyacentes(verticeId);	//O(1)
-			
-			while(itAdyacentesDelVertice.hasNext()){	//O(n)
-				cantidadArcos--;
-			}*/
-			
 			//por cada vértice que no sea el vértice a eliminar, busco si puedo borrar un arco dirigido al mismo,
 			//o bien actualizo el valor precalculado de cantidadArcos en caso de serlo
 			while (iter.hasNext()) {	//O(v)

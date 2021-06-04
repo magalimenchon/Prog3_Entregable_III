@@ -9,7 +9,7 @@ public class Mapa {
 	private Grafo<Integer> grafo;
 	private HashMap<Integer,Ciudad> ciudades;
 	private HashMap<Integer, Boolean> visitadas;	//clave: id de la ciudad, valor: visitada/no visitada.
-
+	private Recorrido mejorRecorrido;
 	
 	//CONSTRUCTOR
 
@@ -46,7 +46,9 @@ public class Mapa {
 	 /*Busca el camino de forma recursiva, teniendo en cuenta que considera siempre pasar por una
 	 * sola balanza. Si origen tiene balanza entonces considero que ya pasa por una en el recorrido. */
 	 public Recorrido encontrarCamino(Ciudad origen, Ciudad destino) {
-		 
+		
+		this.mejorRecorrido = null;
+		
 		Iterator<Integer> it = this.grafo.obtenerVertices();
 		while (it.hasNext()) {
 				int verticeId = it.next();
@@ -60,7 +62,8 @@ public class Mapa {
 	  */
 	 private Recorrido encontrarMejorCamino(int idCiudadActual, int idCiudadDestino, Integer kmActuales, int conteoBalanzas) {
 		
-		 Recorrido recorrido = new Recorrido();	//Inicializo el recorrido
+		 Recorrido recorrido = new Recorrido();
+		 
 		 Ciudad ciudadActual = this.ciudades.get(idCiudadActual);
 		 Ciudad ciudadDestino = this.ciudades.get(idCiudadDestino);
 		 
@@ -89,21 +92,26 @@ public class Mapa {
 					 int distanciaActual = grafo.obtenerArco(idCiudadActual, idCiudadAdyacente).getEtiqueta();
 					 kmActuales += distanciaActual;
 					 
-					 //me agrego al recorrido y busco el mejor camino en mis adyascentes
 					 
-					 Recorrido recorridoParcial = this.encontrarMejorCamino(idCiudadAdyacente, idCiudadDestino, kmActuales, conteoBalanzas);
-					 recorridoParcial.addCiudad(ciudadActual);
-					 
-					 //me elimino ya que puedo ir hacia vertices anteriores para seguir otros caminos del que soy adyacente.
-					 kmActuales -= distanciaActual;
-					 if(this.ciudades.get(idCiudadActual).isTieneBalanza())	//Checkeo si tiene balanza la ciudad actual
-						 conteoBalanzas--;
-					
-					 //decido si mi actual o el parcial es mejor
-					 if(recorridoParcial.existeCiudad(ciudadDestino) &&	
-						(recorrido.getDistancia() == 0 ||	//situación inicial
-						 recorridoParcial.getDistancia() < recorrido.getDistancia())){	//el parcial es mejor que el mejor actual.
-						 recorrido = recorridoParcial;
+					if( this.mejorRecorrido == null || //situación inicial
+					    (kmActuales < this.mejorRecorrido.getDistancia()) ){ //la cantidad de kilometros actuales es menor a la distancia del mejor camino actual
+						 
+						//me agrego al recorrido y busco el mejor camino en mis adyascentes
+						 Recorrido recorridoParcial = this.encontrarMejorCamino(idCiudadAdyacente, idCiudadDestino, kmActuales, conteoBalanzas);
+						 recorridoParcial.addCiudad(ciudadActual);
+						 
+						 //me elimino ya que puedo ir hacia vertices anteriores para seguir otros caminos del que soy adyacente.
+						 kmActuales -= distanciaActual;
+						 if(this.ciudades.get(idCiudadActual).isTieneBalanza())	//Checkeo si tiene balanza la ciudad actual
+							 conteoBalanzas--;
+						
+						 //decido si mi actual o el parcial es mejor
+						 if(recorridoParcial.existeCiudad(ciudadDestino) &&	
+							(recorrido.getDistancia() == 0 ||	//situación inicial
+							 recorridoParcial.getDistancia() < recorrido.getDistancia())){	//el parcial es mejor que el mejor actual.
+							 recorrido = recorridoParcial;
+							 this.mejorRecorrido = recorrido;
+						 }
 					 }
 				 }
 			 }
