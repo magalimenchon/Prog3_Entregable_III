@@ -48,13 +48,16 @@ public class GrafoDirigido<T> implements Grafo<T> {
 		}
 
 	}
+	
 	//Agrega un arco
+	//Complejidad: O(a) donde a es la cantidad de arcos de el vértice origen.
 	@Override
-	public void agregarArco(int verticeId1, int verticeId2, T etiqueta) {	//O(1)
+	public void agregarArco(int verticeId1, int verticeId2, T etiqueta) {
 		
 		Arco<T> arco = new Arco<T>(verticeId1, verticeId2, etiqueta);
-		
-		this.vertices.get(verticeId1).add(arco);	//O(1)
+		//si existe el vértice destino y no existe el arco que quiere añadirse, lo agrego 
+		if( this.contieneVertice(verticeId2) && !this.existeArco(verticeId1, verticeId2) )//O(1 + a)
+			this.vertices.get(verticeId1).add(arco);	//O(1)
 		
 	}
 
@@ -77,11 +80,12 @@ public class GrafoDirigido<T> implements Grafo<T> {
 	}
 	
 	//Busca la clave de vértice origen y checkea si el posible arco es contenido en su ArrayList.
+	//Complejidad: O(a) donde a es la cantidad de arcos de el vértice origen.
 	@Override
-	public boolean existeArco(int verticeId1, int verticeId2) {	//O(1)
+	public boolean existeArco(int verticeId1, int verticeId2) {
 		
 		Arco<T> arco = new Arco<T>(verticeId1, verticeId2, null);
-		return this.vertices.get(verticeId1).contains(arco);	//O(1)
+		return this.vertices.get(verticeId1).contains(arco);	//O(a)
 		
 	}
 
