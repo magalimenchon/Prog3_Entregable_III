@@ -9,14 +9,14 @@ public class GrafoDirigido<T> implements Grafo<T> {
 	
 	//Clave: vertice, valor: lista de arcos que salientes de ese vertice.
 	private HashMap< Integer, ArrayList<Arco<T>> > vertices;	//todos los vértices del grafo
-	
+	private int cantidadArcos;
 	
 	//CONSTRUCTOR
 
 	public GrafoDirigido() {	//O(1)
 		
 		this.vertices = new HashMap< Integer, ArrayList<Arco<T>> >();
-		
+		this.cantidadArcos = 0;
 	}
 	
 	
@@ -55,10 +55,14 @@ public class GrafoDirigido<T> implements Grafo<T> {
 	public void agregarArco(int verticeId1, int verticeId2, T etiqueta) {
 		
 		Arco<T> arco = new Arco<T>(verticeId1, verticeId2, etiqueta);
-		//si existe el vértice destino y no existe el arco que quiere añadirse, lo agrego 
-		if( this.contieneVertice(verticeId2) && !this.existeArco(verticeId1, verticeId2) )//O(1 + a)
-			this.vertices.get(verticeId1).add(arco);	//O(1)
 		
+		//si existe el vértice destino y no existe el arco que quiere añadirse, lo agrego 
+		if( this.contieneVertice(verticeId2) && !this.existeArco(verticeId1, verticeId2) ){//O(1 + a)
+			
+			this.vertices.get(verticeId1).add(arco);	//O(1)
+			cantidadArcos++;
+		
+		}
 	}
 
 	//Complejidad: O(a) donde la cantidad de arcos de ese vértice.
@@ -67,7 +71,9 @@ public class GrafoDirigido<T> implements Grafo<T> {
 		
 		Arco<T> arco = new Arco<T>(verticeId1, verticeId2, null);
 		
-		this.vertices.get(verticeId1).remove(arco);	//O(a)
+		if(this.vertices.get(verticeId1).remove(arco)){ //O(a)	//borra el arco
+			cantidadArcos--;
+		}
 
 	}
 
@@ -118,18 +124,10 @@ public class GrafoDirigido<T> implements Grafo<T> {
 	}
 	
 	//Retorna la cantidad de arcos totales
-	//Complejidad: O(v) donde v es la cantidad de valores de cada vértice
 	@Override
-	public int cantidadArcos() {
+	public int cantidadArcos() {	//O(1)
 		
-		int cantidad = 0;
-		
-		for(ArrayList<Arco<T>> arcoActual : this.vertices.values()) {	//O(v)
-			
-			cantidad = cantidad + arcoActual.size();
-		}
-		
-		return cantidad;
+		return cantidadArcos;
 		
 	}
 	

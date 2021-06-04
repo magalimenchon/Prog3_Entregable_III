@@ -82,6 +82,7 @@ public class Main {
 		
 		mapa.borrarRuta(tandil, rauch);
 		System.out.println(mapa.encontrarCamino(marDelPlata, pehuajo));
+		
 	}
 
 }
