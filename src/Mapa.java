@@ -9,7 +9,7 @@ public class Mapa {
 	private Grafo<Integer> grafo;
 	private HashMap<Integer,Ciudad> ciudades;
 	private HashMap<Integer, Boolean> visitadas;	//clave: id de la ciudad, valor: visitada/no visitada.
-	private Recorrido mejorRecorrido;
+	private int cantidadKm;
 	
 	//CONSTRUCTOR
 
@@ -46,9 +46,9 @@ public class Mapa {
 	 /*Busca el camino de forma recursiva, teniendo en cuenta que considera siempre pasar por una
 	 * sola balanza. Si origen tiene balanza entonces considero que ya pasa por una en el recorrido. */
 	 public Recorrido encontrarCamino(Ciudad origen, Ciudad destino) {
-		
-		this.mejorRecorrido = null;
-		
+
+		this.cantidadKm = 0;
+		 
 		Iterator<Integer> it = this.grafo.obtenerVertices();
 		while (it.hasNext()) {
 				int verticeId = it.next();
@@ -71,7 +71,8 @@ public class Mapa {
 			 
 				 recorrido.addCiudad(ciudadActual);
 				 recorrido.setDistancia(kmActuales);
-			 
+
+				 this.cantidadKm = kmActuales;	//llevo la cantidad de km actuales acumulados 
 		 }
 		 else{	//todavía no llegué al destino
 			 
@@ -92,11 +93,10 @@ public class Mapa {
 					 int distanciaActual = grafo.obtenerArco(idCiudadActual, idCiudadAdyacente).getEtiqueta();
 					 kmActuales += distanciaActual;
 					 
-					 
-					if( this.mejorRecorrido == null || //situación inicial
-					    (kmActuales < this.mejorRecorrido.getDistancia()) ){ //la cantidad de kilometros actuales es menor a la distancia del mejor camino actual
-						 
-						//me agrego al recorrido y busco el mejor camino en mis adyascentes
+					 if(this.cantidadKm == 0 || //situación inicial
+						kmActuales < this.cantidadKm) { //la cantidad de kilometros actuales es menor a la distancia del mejor camino actual
+						
+						 //me agrego al recorrido y busco el mejor camino en mis adyascentes
 						 Recorrido recorridoParcial = this.encontrarMejorCamino(idCiudadAdyacente, idCiudadDestino, kmActuales, conteoBalanzas);
 						 recorridoParcial.addCiudad(ciudadActual);
 						 
@@ -110,7 +110,6 @@ public class Mapa {
 							(recorrido.getDistancia() == 0 ||	//situación inicial
 							 recorridoParcial.getDistancia() < recorrido.getDistancia())){	//el parcial es mejor que el mejor actual.
 							 recorrido = recorridoParcial;
-							 this.mejorRecorrido = recorrido;
 						 }
 					 }
 				 }
